@@ -92,6 +92,8 @@ parse_hold_start(const YAML::Node &node) {
     if (!node)
         return AFTER_PRESS;
     string s = node.as<string>();
+    if (s == "BEFORE_RELEASE")
+        return BEFORE_RELEASE;
     if (s == "BEFORE_CONSUME")
         return BEFORE_CONSUME;
     if (s == "BEFORE_CONSUME_OR_RELEASE")

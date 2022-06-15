@@ -31,6 +31,7 @@ typedef enum HoldStart {
     AFTER_PRESS,
     BEFORE_CONSUME,
     BEFORE_CONSUME_OR_RELEASE,
+    BEFORE_RELEASE,//only hold after release timer has elapsed
 } HoldStart;
 
 typedef struct Mapping {

@@ -183,7 +183,10 @@ consume_pressed() {
         // state
         switch (m->state) {
             case PRESSED:
-                m->state = CONSUMED;
+                if (m->hold_start != BEFORE_RELEASE)
+                {
+                    m->state = CONSUMED;
+                }
                 break;
             case TAPPED:
             case DOUBLETAPPED:
