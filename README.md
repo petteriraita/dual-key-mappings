@@ -121,7 +121,7 @@ MAPPINGS:
       TAP: [ <integer | string>, ... ]
       HOLD: [ <integer | string>, ... ]
       # optional
-      HOLD_START: [ AFTER_PRESS | BEFORE_CONSUME | BEFORE_CONSUME_OR_RELEASE ]
+      HOLD_START: [ AFTER_PRESS | BEFORE_CONSUME | BEFORE_CONSUME_OR_RELEASE | BEFORE_RELEASE ]
     - KEY: ...
 ```
 
@@ -188,7 +188,7 @@ keyboard:       LS↓      a↓  a↑   LS↑             LS↓          LS↑  
 computer sees:       LS↓ a↓  a↑   LS↑                          DE↓ DE↑       DE↓ ..(repeats)..
 ```
 
--   If `HOLD_START` is `BEFORE_CONSUME_OR_RELEASE`, the behavior is like `BEFORE_CONSUME` except that when `KEY` is released and is neither tapped nor consumed before, `HOLD` keys are pressed in order and then released in order.
+-   If `HOLD_START` is `BEFORE_CONSUME_OR_RELEASE`, the behavior is like `BEFORE_CONSUME` except that when `KEY` is released and is neither tapped nor consumed before, `HOLD` keys are pressed in order and then released in order. if the mode is `BEFORE_RELEASE` other keypresses cannot interupt the hold action
 
 ``` text
                 <---------200ms--------->     <---------200ms--------->
