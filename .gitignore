@@ -2,4 +2,4 @@ dual-function-keys
 **/*.o
 **/*.log
 tags
-.vsocode/
+.vscode/
