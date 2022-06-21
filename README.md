@@ -188,13 +188,21 @@ keyboard:       LS↓      a↓  a↑   LS↑             LS↓          LS↑  
 computer sees:       LS↓ a↓  a↑   LS↑                          DE↓ DE↑       DE↓ ..(repeats)..
 ```
 
--   If `HOLD_START` is `BEFORE_CONSUME_OR_RELEASE`, the behavior is like `BEFORE_CONSUME` except that when `KEY` is released and is neither tapped nor consumed before, `HOLD` keys are pressed in order and then released in order. if the mode is `BEFORE_RELEASE` other keypresses cannot interupt the hold action
+-   If `HOLD_START` is `BEFORE_CONSUME_OR_RELEASE`, the behavior is like `BEFORE_CONSUME` except that when `KEY` is released and is neither tapped nor consumed before, `HOLD` keys are pressed in order and then released in order.
+``` text
+                <---------200ms--------->     <---------200ms--------->
+keyboard:       LS↓      LS↑                  LS↓                          LS↑
+computer sees:           DE↓ DE↑                                           LS↓ LS↑
+```
+
+-   If `HOLD_START` is `BEFORE_RELEASE`, hold will only start after key release if the TAP_MILLISEC time has been exceded. This hold start is not affected by any kind of consumption
 
 ``` text
                 <---------200ms--------->     <---------200ms--------->
 keyboard:       LS↓      LS↑                  LS↓                          LS↑
 computer sees:           DE↓ DE↑                                           LS↓ LS↑
 ```
+
 
 #### Warning
 
