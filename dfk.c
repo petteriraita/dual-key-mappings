@@ -149,6 +149,10 @@ handle_release(Mapping *m, struct input_event *input) {
             break;
         case CONSUMED:
         case RELEASED:
+            if (m->hold_start == BEFORE_RELEASE) {
+                hold(m, INPUT_VAL_RELEASE);
+                break;
+            }
         case PRESSED:
             if (m->hold_start == BEFORE_CONSUME_OR_RELEASE && !already_pressed) {
                 hold(m, INPUT_VAL_PRESS);
@@ -183,8 +187,7 @@ consume_pressed() {
         // state
         switch (m->state) {
             case PRESSED:
-                if (m->hold_start != BEFORE_RELEASE)
-                {
+                if(m->hold_start != BEFORE_RELEASE) {
                     m->state = CONSUMED;
                 }
                 break;
