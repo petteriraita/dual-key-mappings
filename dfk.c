@@ -149,7 +149,7 @@ handle_release(Mapping *m, struct input_event *input) {
             break;
         case CONSUMED:
         case RELEASED:
-            if (m->hold_start == BEFORE_RELEASE) {
+            if (m->hold_start == AFTER_RELEASE) {
                 hold(m, INPUT_VAL_PRESS);
                 syn_pause();
                 hold(m, INPUT_VAL_RELEASE);
@@ -171,7 +171,7 @@ handle_release(Mapping *m, struct input_event *input) {
 void
 consume_pressed() {
     for (Mapping *m = cfg.m; m; m = m->n) {
-        if(m->hold_start == BEFORE_RELEASE)
+        if(m->hold_start == AFTER_RELEASE)
             continue;
         // action
         switch (m->state) {
