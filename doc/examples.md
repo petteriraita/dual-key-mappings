@@ -107,6 +107,25 @@ MAPPINGS:
     HOLD: [ KEY_LEFTCTRL, KEY_LEFTMETA, KEY_LEFTALT, ] 
 ```
 
+# Autoshift
+```yaml
+  - KEY: KEY_A
+    TAP: KEY_A
+    HOLD: [KEY_LEFTSHIFT, KEY_A]
+    HOLD_START: AFTER_RELEASE
+
+  - KEY: KEY_B
+    TAP: KEY_B
+    HOLD: [KEY_LEFTSHIFT, KEY_B]
+    HOLD_START: AFTER_RELEASE
+
+  - KEY: KEY_C
+    TAP: KEY_C
+    HOLD: [KEY_LEFTSHIFT, KEY_C]
+    HOLD_START: AFTER_RELEASE
+```
+example by @calvinreu
+
 # Complete Example (Thanks @heymajor !)
 
 ## Use case

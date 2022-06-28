@@ -2,3 +2,4 @@ dual-function-keys
 **/*.o
 **/*.log
 tags
+.vscode/

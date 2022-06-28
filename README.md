@@ -121,7 +121,7 @@ MAPPINGS:
       TAP: [ <integer | string>, ... ]
       HOLD: [ <integer | string>, ... ]
       # optional
-      HOLD_START: [ AFTER_PRESS | BEFORE_CONSUME | BEFORE_CONSUME_OR_RELEASE ]
+      HOLD_START: [ AFTER_PRESS | AFTER_RELEASE | BEFORE_CONSUME | BEFORE_CONSUME_OR_RELEASE ]
     - KEY: ...
 ```
 
@@ -189,6 +189,14 @@ computer sees:       LS↓ a↓  a↑   LS↑                          DE↓ DE�
 ```
 
 -   If `HOLD_START` is `BEFORE_CONSUME_OR_RELEASE`, the behavior is like `BEFORE_CONSUME` except that when `KEY` is released and is neither tapped nor consumed before, `HOLD` keys are pressed in order and then released in order.
+
+``` text
+                <---------200ms--------->     <---------200ms--------->
+keyboard:       LS↓      LS↑                  LS↓                          LS↑
+computer sees:           DE↓ DE↑                                           LS↓ LS↑
+```
+
+-   If `HOLD_START` is `AFTER_RELEASE`, hold will only start after key release if the TAP_MILLISEC time has been exceded. This hold start is not affected by any kind of consumption
 
 ``` text
                 <---------200ms--------->     <---------200ms--------->
@@ -312,7 +320,7 @@ An alternative, if you want to [live dangerously](https://gitlab.com/interceptio
 
 As always, there is a caveat: dual-function-keys operates on raw *keycodes*, not *keysyms*, as seen by X11 or Wayland.
 
-If you have anything modifying the keycode->keysym mapping, such as [XKB](https://www.x.org/wiki/XKB/) or [xmodmap](https://wiki.archlinux.org/index.php/Xmodmap), be mindful that dual-function-keys operates before them.
+If you have anything modifying the keycode-\>keysym mapping, such as [XKB](https://www.x.org/wiki/XKB/) or [xmodmap](https://wiki.archlinux.org/index.php/Xmodmap), be mindful that dual-function-keys operates before them.
 
 Some common XKB usages that might be found in your X11 configuration:
 
