@@ -1,0 +1,13 @@
+clang
+
+-I/usr/include/libevdev-1.0
+
+-D_POSIX_C_SOURCE=200809L
+-DVERSION="DUMMY"
+
+-pedantic
+-Wall
+-Wextra
+
+%c -std=c99
+%cpp -std=c++11

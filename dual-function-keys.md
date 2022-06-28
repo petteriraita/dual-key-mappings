@@ -31,9 +31,9 @@ In these examples we will use the left shift key (LS).
 It is configured to tap for delete (DE) and hold for LS.
 
 ```yaml
-  - KEY: KEY_LEFTSHIFT
-    TAP: KEY_DELETE
-    HOLD: KEY_LEFTSHIFT
+- KEY: KEY_LEFTSHIFT
+  TAP: KEY_DELETE
+  HOLD: KEY_LEFTSHIFT
 ```
 
 ### Tap
@@ -114,51 +114,51 @@ You can use raw (integer) keycodes, however it is easier to use the `#define`d s
 ``` yaml
 # optional
 TIMING:
-    TAP_MILLISEC: <integer>
-    DOUBLE_TAP_MILLISEC: <integer>
-    SYNTHETIC_KEYS_PAUSE_MILLISEC: <integer>
+  TAP_MILLISEC: <integer>
+  DOUBLE_TAP_MILLISEC: <integer>
+  SYNTHETIC_KEYS_PAUSE_MILLISEC: <integer>
 
 # necessary
 MAPPINGS:
-    - KEY: <integer | string>
-      TAP: [ <integer | string>, ... ]
-      HOLD: [ <integer | string>, ... ]
-      # optional
-      HOLD_START: [ AFTER_PRESS | AFTER_RELEASE | BEFORE_CONSUME | BEFORE_CONSUME_OR_RELEASE ]
-    - KEY: ...
+  - KEY: <integer | string>
+    TAP: [ <integer | string>, ... ]
+    HOLD: [ <integer | string>, ... ]
+    # optional
+    HOLD_START: [ AFTER_PRESS | AFTER_RELEASE | BEFORE_CONSUME | BEFORE_CONSUME_OR_RELEASE ]
+  - KEY: ...
 ```
 
 Our example from the previous section looks like:
 
 ``` yaml
 TIMING:
-    TAP_MILLISEC: 200
-    DOUBLE_TAP_MILLISEC: 150
+  TAP_MILLISEC: 200
+  DOUBLE_TAP_MILLISEC: 150
 
 MAPPINGS:
-    - KEY: KEY_LEFTSHIFT
-      TAP: KEY_DELETE
-      HOLD: KEY_LEFTSHIFT
+  - KEY: KEY_LEFTSHIFT
+    TAP: KEY_DELETE
+    HOLD: KEY_LEFTSHIFT
 ```
 
-#### Combo Keys
+### Combo Keys
 
 You can configure the `TAP` as a "combo", which will press then release multiple keys in order e.g. space cadet `(`:
 
 ```YAML
 MAPPINGS:
-    - KEY: KEY_LEFTSHIFT
-      TAP: [ KEY_LEFTSHIFT, KEY_9, ]
-      HOLD: KEY_LEFTSHIFT
+  - KEY: KEY_LEFTSHIFT
+    TAP: [ KEY_LEFTSHIFT, KEY_9, ]
+    HOLD: KEY_LEFTSHIFT
 ```
 
 You can configure the `HOLD` as a “combo”, which will press then release multiple keys in order e.g. hyper modifier:
 
 ``` YAML
 MAPPINGS:
-    - KEY: KEY_TAB
-      TAP: KEY_TAB
-      HOLD: [ KEY_LEFTCTRL, KEY_LEFTMETA, KEY_LEFTALT, ]
+  - KEY: KEY_TAB
+    TAP: KEY_TAB
+    HOLD: [ KEY_LEFTCTRL, KEY_LEFTMETA, KEY_LEFTALT, ]
 ```
 
 By default, there will be a pause of 20ms between keys in the "combo". This may be changed:
@@ -168,13 +168,25 @@ TIMING:
     SYNTHETIC_KEYS_PAUSE_MILLISEC: 10
 ```
 
-#### Changing the Behavior of `HOLD` Keys
+### Changing the Behavior of `HOLD` Keys
 
-Additionally, you can use `HOLD_START` to configure the behavior of `HOLD` keys. The examples [above](#functionality) will be used again here.
+You can optionally use `HOLD_START` to configure the behavior of `HOLD` keys.
 
-- If `HOLD_START` is unspecified, `AFTER_PRESS` or an unrecognized value, `HOLD` keys are pressed after `KEY` is pressed, and released when `KEY` is released. This this the default behavior used in examples [above](#functionality).
+#### `HOLD_START: AFTER_PRESS`
 
-- If `HOLD_START` is `BEFORE_CONSUME`, `HOLD` keys are pressed before `KEY` is consumed, and released when `KEY` is released. Therefore no extra keys beside `TAP` keys are sent when `KEY` is tapped, while `HOLD` keys can still be used as modifiers.
+If `HOLD_START` is unspecified, `AFTER_PRESS` or an unrecognized value, the default behaviour will apply.
+
+#### `HOLD_START: BEFORE_CONSUME`
+
+`HOLD` keys are pressed before `KEY` is consumed, and released when `KEY` is released. Therefore no extra keys beside `TAP` keys are sent when `KEY` is tapped, while `HOLD` keys can still be used as modifiers.
+
+``` yaml
+MAPPINGS:
+  - KEY: KEY_LEFTSHIFT
+    TAP: KEY_DELETE
+    HOLD: KEY_LEFTSHIFT
+    HOLD_START: BEFORE_CONSUME
+```
 
 ``` text
                 <---------200ms--------->     <---------200ms--------->
@@ -191,7 +203,17 @@ keyboard:       LS↓      a↓  a↑   LS↑             LS↓          LS↑  
 computer sees:       LS↓ a↓  a↑   LS↑                          DE↓ DE↑       DE↓ ..(repeats)..
 ```
 
-- If `HOLD_START` is `BEFORE_CONSUME_OR_RELEASE`, the behavior is like `BEFORE_CONSUME` except that when `KEY` is released and is neither tapped nor consumed before, `HOLD` keys are pressed in order and then released in order.
+#### `HOLD_START: BEFORE_CONSUME_OR_RELEASE`
+
+The behavior is like `BEFORE_CONSUME` except that when `KEY` is released and is neither tapped nor consumed before, `HOLD` keys are pressed in order and then released in order.
+
+``` yaml
+MAPPINGS:
+  - KEY: KEY_LEFTSHIFT
+    TAP: KEY_DELETE
+    HOLD: KEY_LEFTSHIFT
+    HOLD_START: BEFORE_CONSUME_OR_RELEASE
+```
 
 ``` text
                 <---------200ms--------->     <---------200ms--------->
@@ -199,42 +221,52 @@ keyboard:       LS↓      LS↑                  LS↓                         
 computer sees:           DE↓ DE↑                                           LS↓ LS↑
 ```
 
--   If `HOLD_START` is `AFTER_RELEASE`, hold will only start after key release if the TAP_MILLISEC time has been exceded. This hold start is not affected by any kind of consumption
+#### `HOLD_START: AFTER_RELEASE`
+
+Hold will only start after key release if the TAP_MILLISEC time has been exceded. This hold start is not affected by any kind of consumption
+
+``` yaml
+MAPPINGS:
+  - KEY: KEY_A
+    TAP: KEY_A
+    HOLD: [KEY_LEFTSHIFT, KEY_A]
+    HOLD_START: AFTER_RELEASE
+```
 
 ``` text
                 <---------200ms--------->     <---------200ms--------->
-keyboard:       LS↓      LS↑                  LS↓                          LS↑
-computer sees:           DE↓ DE↑                                           LS↓ LS↑
+keyboard:       a↓       a↑                   a↓                           a↑
+computer sees:           a↓  a↑                                            A↓ A↑
 ```
 
-#### Warning
+### Warning
 
 Do not assign the same modifier to two keys that you intend to press at the same time, as they will interfere with each other. Use left and right versions of the modifiers e.g. alt-tab with space-caps:
 
 ``` yaml
 MAPPINGS:
-    - KEY: KEY_CAPSLOCK
-      TAP: KEY_TAB
-      HOLD: KEY_LEFTALT
+  - KEY: KEY_CAPSLOCK
+    TAP: KEY_TAB
+    HOLD: KEY_LEFTALT
 
-    - KEY: KEY_SPACE
-      TAP: KEY_SPACE
-      HOLD: KEY_RIGHTALT
+  - KEY: KEY_SPACE
+    TAP: KEY_SPACE
+    HOLD: KEY_RIGHTALT
 ```
 
 Alternatively, you can use `HOLD_START: BEFORE_CONSUME` or `HOLD_START: BEFORE_CONSUME_OR_RELEASE` and then assigning the same modifier will be fine:
 
 ``` yaml
 MAPPINGS:
-    - KEY: KEY_CAPSLOCK
-      TAP: KEY_TAB
-      HOLD: KEY_LEFTALT
-      HOLD_START: BEFORE_CONSUME_OR_RELEASE
+  - KEY: KEY_CAPSLOCK
+    TAP: KEY_TAB
+    HOLD: KEY_LEFTALT
+    HOLD_START: BEFORE_CONSUME_OR_RELEASE
 
-    - KEY: KEY_SPACE
-      TAP: KEY_SPACE
-      HOLD: KEY_LEFTALT
-      HOLD_START: BEFORE_CONSUME_OR_RELEASE
+  - KEY: KEY_SPACE
+    TAP: KEY_SPACE
+    HOLD: KEY_LEFTALT
+    HOLD_START: BEFORE_CONSUME_OR_RELEASE
 ```
 
 ### udevmon
@@ -282,9 +314,9 @@ Example udevmon configuration for a mouse and keyboard:
 ```yaml
 - CMD: mux -c dfk -c my-keyboard -c my-mouse
 - JOB:
-    - mux -i dfk | dual-function-keys -c /etc/interception/dual-function-keys/my-cfg.yaml | mux -o my-keyboard -o my-mouse
-    - mux -i my-keyboard | uinput -c /etc/interception/udevmon.d/my-keyboard.yaml
-    - mux -i my-mouse | uinput -c /etc/interception/udevmon.d/my-mouse.yaml
+  - mux -i dfk | dual-function-keys -c /etc/interception/dual-function-keys/my-cfg.yaml | mux -o my-keyboard -o my-mouse
+  - mux -i my-keyboard | uinput -c /etc/interception/udevmon.d/my-keyboard.yaml
+  - mux -i my-mouse | uinput -c /etc/interception/udevmon.d/my-mouse.yaml
 - JOB: intercept -g $DEVNODE | mux -o dfk
   DEVICE:
     NAME: AT Translated Set 2 keyboard
@@ -307,9 +339,9 @@ An alternative, if you want to [live dangerously](https://gitlab.com/interceptio
 ```yaml
 - CMD: mux -c dfk -c my-keyboard -c my-mouse
 - JOB:
-    - mux -i dfk | dual-function-keys -c /etc/interception/dual-function-keys/my-cfg.yaml | mux -o my-keyboard -o my-mouse
-    - mux -i my-keyboard | uinput -d /dev/input/by-path/my-keyboard-event-kbd
-    - mux -i my-mouse | uinput -d /dev/input/by-id/usb-my-mouse-event-mouse
+  - mux -i dfk | dual-function-keys -c /etc/interception/dual-function-keys/my-cfg.yaml | mux -o my-keyboard -o my-mouse
+  - mux -i my-keyboard | uinput -d /dev/input/by-path/my-keyboard-event-kbd
+  - mux -i my-mouse | uinput -d /dev/input/by-id/usb-my-mouse-event-mouse
 - JOB: intercept -g $DEVNODE | mux -o dfk
   DEVICE:
     LINK: /dev/input/by-path/my-keyboard-event-kbd
@@ -366,7 +398,11 @@ Set DOUBLE_TAP_MILLISEC to 0. See [Key Combinations, No Double Tap](https://gitl
 
 Please fork this repo and submit a PR.
 
-If you are making changes to the documentation, please edit the pandoc flavoured `dual-function-keys.md` and run `make doc`. Please ensure that this `README.md` and the man page `dual-function-keys.1` has your changes and commit all three.
+If you are making changes to the documentation, please edit the pandoc flavoured `dual-function-keys.md` and run `make doc`.
+
+Please ensure that this `README.md` and the man page `dual-function-keys.1` has your changes and commit all three.
+
+You can test the generated man page with `man -l dual-function-keys.1`
 
 As usual, please obey `.editorconfig`.
 
