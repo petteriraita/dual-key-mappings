@@ -398,7 +398,7 @@ Set DOUBLE_TAP_MILLISEC to 0. See [Key Combinations, No Double Tap](https://gitl
 
 Please fork this repo and submit a PR.
 
-If you are making changes to the documentation, please edit the pandoc flavoured `dual-function-keys.md` and run `make doc`.
+If you are making changes to the documentation, please edit the pandoc flavoured `dual-function-keys.md` and run `make doc`. Requires docker.
 
 Please ensure that this `README.md` and the man page `dual-function-keys.1` has your changes and commit all three.
 

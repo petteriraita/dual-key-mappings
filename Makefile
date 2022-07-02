@@ -6,6 +6,8 @@ CXXSRC = cfg.cpp
 
 OBJ = $(CSRC:.c=.o) $(CXXSRC:.cpp=.o)
 
+PANDOC = docker run --rm --volume "$(PWD):/data" --user $(shell id -u):$(shell id -g) pandoc/latex
+
 all: dual-function-keys
 
 $(OBJ): config.mk $(HDR)
@@ -34,7 +36,7 @@ ctags:
 
 # dual-function-keys.md is pandoc flavoured markdown; please edit that and commit all 3 files
 doc: dual-function-keys.md
-	pandoc -s --wrap=none -f markdown -t man dual-function-keys.md -o dual-function-keys.1 --shift-heading-level-by=-1
-	pandoc -s --wrap=none -f markdown -t commonmark dual-function-keys.md -o README.md
+	$(PANDOC) -s --wrap=none -f markdown -t man dual-function-keys.md -o dual-function-keys.1 --shift-heading-level-by=-1
+	$(PANDOC) -s --wrap=none -f markdown -t commonmark dual-function-keys.md -o README.md
 
 .PHONY: all clean install uninstall ctags
