@@ -22,9 +22,6 @@ A plugin for [interception tools](https://gitlab.com/interception/linux).
 
 <!-- gh-md-toc --no-backup --hide-footer README.md -->
 <!--ts-->
-* [NAME](#name)
-* [DESCRIPTION](#description)
-* [QUICK START](#quick-start)
 * [FUNCTIONALITY](#functionality)
    * [Tap](#tap)
    * [Double Tap](#double-tap)
@@ -33,6 +30,7 @@ A plugin for [interception tools](https://gitlab.com/interception/linux).
    * [Package Manager](#package-manager)
    * [From Source](#from-source)
 * [CONFIGURATION](#configuration)
+   * [udevmon](#udevmon)
    * [dual-function-keys](#dual-function-keys)
    * [Combo Keys](#combo-keys)
    * [Changing the Behavior of HOLD Keys](#changing-the-behavior-of-hold-keys)
@@ -41,15 +39,9 @@ A plugin for [interception tools](https://gitlab.com/interception/linux).
       * [HOLD_START: BEFORE_CONSUME_OR_RELEASE](#hold_start-before_consume_or_release)
       * [HOLD_START: AFTER_RELEASE](#hold_start-after_release)
    * [Warning](#warning)
-   * [udevmon](#udevmon)
    * [Multiple Devices](#multiple-devices)
 * [CAVEATS](#caveats)
 * [FAQ](#faq)
-   * [I have a new use case. Can you support it?](#i-have-a-new-use-case-can-you-support-it)
-   * [I see you are using q.m.k HHKB mod Keyboard in your udevmon. It uses <a href="https://qmk.fm/" rel="nofollow">QMK Firmware</a>. Why not just use <a href="https://docs.qmk.fm/#/tap_hold" rel="nofollow">Tap-Hold</a>?](#i-see-you-are-using-qmk-hhkb-mod-keyboard-in-your-udevmon-it-uses-qmk-firmware-why-not-just-use-tap-hold)
-   * [Why not use <a href="https://github.com/alols/xcape">xcape</a>?](#why-not-use-xcape)
-   * [My Key Combination Isn’t Working](#my-key-combination-isnt-working)
-   * [I Don’t Want Double Tap Functionality](#i-dont-want-double-tap-functionality)
 * [CONTRIBUTORS](#contributors)
 * [LICENSE](#license)
 <!--te-->
@@ -132,9 +124,36 @@ Installation prefix defaults to `/usr/local`. This can be overridden in `config.
 
 # CONFIGURATION
 
-There are two parts to be configured: dual-function-keys and udevmon, which launches dual-function-keys.
+## udevmon
 
-See [examples](https://gitlab.com/interception/linux/plugins/dual-function-keys/-/tree/master/doc/examples.md) which contains dual-function-keys and udevmon.yaml configurations.
+udevmon from [interception-tools](https://gitlab.com/interception/linux/tools) is used to launch Dual Function Keys. See [How It Works](https://gitlab.com/interception/linux/tools#how-it-works) for the full story.
+
+Determine your keyboard’s name:
+
+``` sh
+libinput list-devices | grep "^Device"
+```
+
+Alternatively, you can use interception tools’ [uinput -p](https://gitlab.com/interception/linux/tools#how-it-works) for more direct device enumeration based on available events (keys) etc.
+
+Create a new configuration: `/etc/interception/udevmon.d/my-keyboard.yaml`. You can create one file per keyboard or one file containing all keyboards. You can use a regex for the keyboard name.
+
+``` yaml
+- JOB: "intercept -g $DEVNODE | dual-function-keys -c </path/to/dual-function-keys.yaml> | uinput -d $DEVNODE"
+  DEVICE:
+    NAME: <keyboard name>
+```
+
+Example: laptop and dactyl:
+
+``` yaml
+- JOB: "intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/home-row-modifiers.yaml | uinput -d $DEVNODE"
+  DEVICE:
+    NAME: "AT Translated Set 2 keyboard"
+- JOB: "intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/dfk.thumb-cluster.yaml | uinput -d $DEVNODE"
+  DEVICE:
+    NAME: "tshort Dactyl-Manuform-6x6.*"
+```
 
 ## dual-function-keys
 
@@ -298,43 +317,6 @@ MAPPINGS:
     TAP: KEY_SPACE
     HOLD: KEY_LEFTALT
     HOLD_START: BEFORE_CONSUME_OR_RELEASE
-```
-
-## udevmon
-
-udevmon needs to be informed that we desire Dual Function Keys. See [How It Works](https://gitlab.com/interception/linux/tools#how-it-works) for the full story.
-
-``` yaml
-- JOB: "intercept -g $DEVNODE | dual-function-keys -c </path/to/dual-function-keys.yaml> | uinput -d $DEVNODE"
-  DEVICE:
-    NAME: <keyboard name>
-```
-
-The name may be determined by executing:
-
-``` sh
-sudo uinput -p -d /dev/input/by-id/X
-```
-
-where X is the device with the name that looks like your keyboard. Ensure that all `EV_KEY`s are present under `EVENTS`. If you can’t find your keyboard under `/dev/input/by-id`, look at devices directly under `/dev/input`.
-
-See [Interception Tools: How It Works](https://gitlab.com/interception/linux/tools#how-it-works) for more information on `uinput -p`.
-
-Usually the name is sufficient to uniquely identify the keyboard, however some keyboards register many devices such as a virtal mouse. You can run dual-function-keys for all the devices, however I prefer to run it only for the actual keyboard.
-
-My `/etc/interception/udevmon.d/my-keyboards.yaml`:
-
-``` yaml
-- JOB: "intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/home-row-modifiers.yaml | uinput -d $DEVNODE"
-  DEVICE:
-    NAME: "Minimalist Keyboard ABC"
-    EVENTS:
-      EV_KEY: [ KEY_LEFTSHIFT ]
-- JOB: "intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/thumb-cluster.yaml | uinput -d $DEVNODE"
-  DEVICE:
-    NAME: "Split Keyboard XYZ"
-    EVENTS:
-      EV_KEY: [ KEY_LEFTSHIFT ]
 ```
 
 ## Multiple Devices

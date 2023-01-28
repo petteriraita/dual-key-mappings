@@ -126,10 +126,45 @@ make && sudo make install
 Installation prefix defaults to \f[V]/usr/local\f[R].
 This can be overridden in \f[V]config.mk\f[R].
 .SH CONFIGURATION
+.SS udevmon
 .PP
-There are two parts to be configured: dual-function-keys and udevmon, which launches dual-function-keys.
+udevmon from interception-tools (https://gitlab.com/interception/linux/tools) is used to launch Dual Function Keys.
+See How It Works (https://gitlab.com/interception/linux/tools#how-it-works) for the full story.
 .PP
-See examples (https://gitlab.com/interception/linux/plugins/dual-function-keys/-/tree/master/doc/examples.md) which contains dual-function-keys and udevmon.yaml configurations.
+Determine your keyboard\[cq]s name:
+.IP
+.nf
+\f[C]
+libinput list-devices | grep \[dq]\[ha]Device\[dq]
+\f[R]
+.fi
+.PP
+Alternatively, you can use interception tools\[cq] uinput -p (https://gitlab.com/interception/linux/tools#how-it-works) for more direct device enumeration based on available events (keys) etc.
+.PP
+Create a new configuration: \f[V]/etc/interception/udevmon.d/my-keyboard.yaml\f[R].
+You can create one file per keyboard or one file containing all keyboards.
+You can use a regex for the keyboard name.
+.IP
+.nf
+\f[C]
+- JOB: \[dq]intercept -g $DEVNODE | dual-function-keys -c </path/to/dual-function-keys.yaml> | uinput -d $DEVNODE\[dq]
+  DEVICE:
+    NAME: <keyboard name>
+\f[R]
+.fi
+.PP
+Example: laptop and dactyl:
+.IP
+.nf
+\f[C]
+- JOB: \[dq]intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/home-row-modifiers.yaml | uinput -d $DEVNODE\[dq]
+  DEVICE:
+    NAME: \[dq]AT Translated Set 2 keyboard\[dq]
+- JOB: \[dq]intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/dfk.thumb-cluster.yaml | uinput -d $DEVNODE\[dq]
+  DEVICE:
+    NAME: \[dq]tshort Dactyl-Manuform-6x6.*\[dq]
+\f[R]
+.fi
 .SS dual-function-keys
 .PP
 This yaml file conventionally resides in \f[V]/etc/interception/dual-function-keys\f[R].
@@ -316,52 +351,6 @@ MAPPINGS:
     TAP: KEY_SPACE
     HOLD: KEY_LEFTALT
     HOLD_START: BEFORE_CONSUME_OR_RELEASE
-\f[R]
-.fi
-.SS udevmon
-.PP
-udevmon needs to be informed that we desire Dual Function Keys.
-See How It Works (https://gitlab.com/interception/linux/tools#how-it-works) for the full story.
-.IP
-.nf
-\f[C]
-- JOB: \[dq]intercept -g $DEVNODE | dual-function-keys -c </path/to/dual-function-keys.yaml> | uinput -d $DEVNODE\[dq]
-  DEVICE:
-    NAME: <keyboard name>
-\f[R]
-.fi
-.PP
-The name may be determined by executing:
-.IP
-.nf
-\f[C]
-sudo uinput -p -d /dev/input/by-id/X
-\f[R]
-.fi
-.PP
-where X is the device with the name that looks like your keyboard.
-Ensure that all \f[V]EV_KEY\f[R]s are present under \f[V]EVENTS\f[R].
-If you can\[cq]t find your keyboard under \f[V]/dev/input/by-id\f[R], look at devices directly under \f[V]/dev/input\f[R].
-.PP
-See Interception Tools: How It Works (https://gitlab.com/interception/linux/tools#how-it-works) for more information on \f[V]uinput -p\f[R].
-.PP
-Usually the name is sufficient to uniquely identify the keyboard, however some keyboards register many devices such as a virtal mouse.
-You can run dual-function-keys for all the devices, however I prefer to run it only for the actual keyboard.
-.PP
-My \f[V]/etc/interception/udevmon.d/my-keyboards.yaml\f[R]:
-.IP
-.nf
-\f[C]
-- JOB: \[dq]intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/home-row-modifiers.yaml | uinput -d $DEVNODE\[dq]
-  DEVICE:
-    NAME: \[dq]Minimalist Keyboard ABC\[dq]
-    EVENTS:
-      EV_KEY: [ KEY_LEFTSHIFT ]
-- JOB: \[dq]intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/thumb-cluster.yaml | uinput -d $DEVNODE\[dq]
-  DEVICE:
-    NAME: \[dq]Split Keyboard XYZ\[dq]
-    EVENTS:
-      EV_KEY: [ KEY_LEFTSHIFT ]
 \f[R]
 .fi
 .SS Multiple Devices
