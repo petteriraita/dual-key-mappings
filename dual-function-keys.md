@@ -137,7 +137,7 @@ Example: laptop and dactyl:
 
 ## dual-function-keys
 
-This yaml file conventionally resides in `/etc/interception/dual-function-keys`.
+This yaml file conventionally resides in `/etc/interception/dual-function-keys` and contains the configuration for Dual Function Keys itself.
 
 You can use raw (integer) keycodes, however it is easier to use the `#define`d strings from [input-event-codes.h](https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h).
 
@@ -171,7 +171,7 @@ MAPPINGS:
     HOLD: KEY_LEFTSHIFT
 ```
 
-## Combo Keys
+### Combo Keys
 
 You can configure the `TAP` as a "combo", which will press then release multiple keys in order e.g. space cadet `(`:
 
@@ -198,15 +198,15 @@ TIMING:
     SYNTHETIC_KEYS_PAUSE_MILLISEC: 10
 ```
 
-## Changing the Behavior of `HOLD` Keys
+### Changing the Behavior of `HOLD` Keys
 
 You can optionally use `HOLD_START` to configure the behavior of `HOLD` keys.
 
-### `HOLD_START: AFTER_PRESS`
+#### `HOLD_START: AFTER_PRESS`
 
 If `HOLD_START` is unspecified, `AFTER_PRESS` or an unrecognized value, the default behaviour will apply.
 
-### `HOLD_START: BEFORE_CONSUME`
+#### `HOLD_START: BEFORE_CONSUME`
 
 `HOLD` keys are pressed before `KEY` is consumed, and released when `KEY` is released. Therefore no extra keys beside `TAP` keys are sent when `KEY` is tapped, while `HOLD` keys can still be used as modifiers.
 
@@ -233,7 +233,7 @@ keyboard:       LS↓      a↓  a↑   LS↑             LS↓          LS↑  
 computer sees:       LS↓ a↓  a↑   LS↑                          DE↓ DE↑       DE↓ ..(repeats)..
 ```
 
-### `HOLD_START: BEFORE_CONSUME_OR_RELEASE`
+#### `HOLD_START: BEFORE_CONSUME_OR_RELEASE`
 
 The behavior is like `BEFORE_CONSUME` except that when `KEY` is released and is neither tapped nor consumed before, `HOLD` keys are pressed in order and then released in order.
 
@@ -251,7 +251,7 @@ keyboard:       LS↓      LS↑                  LS↓                         
 computer sees:           DE↓ DE↑                                           LS↓ LS↑
 ```
 
-### `HOLD_START: AFTER_RELEASE`
+#### `HOLD_START: AFTER_RELEASE`
 
 Hold will only start after key release if the TAP_MILLISEC time has been exceded. This hold start is not affected by any kind of consumption
 
@@ -269,7 +269,7 @@ keyboard:       a↓       a↑                   a↓                          
 computer sees:           a↓  a↑                                            A↓ A↑
 ```
 
-## Warning
+### Warning
 
 Do not assign the same modifier to two keys that you intend to press at the same time, as they will interfere with each other. Use left and right versions of the modifiers e.g. alt-tab with space-caps:
 
