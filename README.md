@@ -1,8 +1,8 @@
-## NAME
+# NAME
 
 interception - dual function keys
 
-## DESCRIPTION
+# DESCRIPTION
 
 Tap for one key, hold for another.
 
@@ -12,7 +12,7 @@ A hand-saver for those with restricted finger mobility.
 
 A plugin for [interception tools](https://gitlab.com/interception/linux).
 
-## QUICK START
+# QUICK START
 
 1.  Create some mappings `/etc/interception/dual-function-keys/my-mappings.yaml`. There are many [examples](https://gitlab.com/interception/linux/plugins/dual-function-keys/-/tree/master/doc/examples.md)
 2.  Create your [interception tools](https://gitlab.com/interception/linux) udevmon configuration: `/etc/interception/udevmon.d/my-keyboards.yaml`. You can use [my configuration](#udevmon) to get started.
@@ -20,7 +20,41 @@ A plugin for [interception tools](https://gitlab.com/interception/linux).
 4.  (Re)start udevmon: `sudo systemctl restart udevmon`
 5.  Check for problems: `journalctl -u udevmon`. No news is good news. You can safely disregard any `ignoring /etc/interception/udevmon.yaml, reason: bad file: /etc/interception/udevmon.yaml` messages.
 
-## FUNCTIONALITY
+<!-- gh-md-toc --no-backup --hide-footer README.md -->
+<!--ts-->
+* [NAME](#name)
+* [DESCRIPTION](#description)
+* [QUICK START](#quick-start)
+* [FUNCTIONALITY](#functionality)
+   * [Tap](#tap)
+   * [Double Tap](#double-tap)
+   * [Consumption](#consumption)
+* [INSTALLATION](#installation)
+   * [Package Manager](#package-manager)
+   * [From Source](#from-source)
+* [CONFIGURATION](#configuration)
+   * [dual-function-keys](#dual-function-keys)
+   * [Combo Keys](#combo-keys)
+   * [Changing the Behavior of HOLD Keys](#changing-the-behavior-of-hold-keys)
+      * [HOLD_START: AFTER_PRESS](#hold_start-after_press)
+      * [HOLD_START: BEFORE_CONSUME](#hold_start-before_consume)
+      * [HOLD_START: BEFORE_CONSUME_OR_RELEASE](#hold_start-before_consume_or_release)
+      * [HOLD_START: AFTER_RELEASE](#hold_start-after_release)
+   * [Warning](#warning)
+   * [udevmon](#udevmon)
+   * [Multiple Devices](#multiple-devices)
+* [CAVEATS](#caveats)
+* [FAQ](#faq)
+   * [I have a new use case. Can you support it?](#i-have-a-new-use-case-can-you-support-it)
+   * [I see you are using q.m.k HHKB mod Keyboard in your udevmon. It uses <a href="https://qmk.fm/" rel="nofollow">QMK Firmware</a>. Why not just use <a href="https://docs.qmk.fm/#/tap_hold" rel="nofollow">Tap-Hold</a>?](#i-see-you-are-using-qmk-hhkb-mod-keyboard-in-your-udevmon-it-uses-qmk-firmware-why-not-just-use-tap-hold)
+   * [Why not use <a href="https://github.com/alols/xcape">xcape</a>?](#why-not-use-xcape)
+   * [My Key Combination Isn’t Working](#my-key-combination-isnt-working)
+   * [I Don’t Want Double Tap Functionality](#i-dont-want-double-tap-functionality)
+* [CONTRIBUTORS](#contributors)
+* [LICENSE](#license)
+<!--te-->
+
+# FUNCTIONALITY
 
 In these examples we will use the left shift key (LS).
 
@@ -32,7 +66,7 @@ It is configured to tap for delete (DE) and hold for LS.
   HOLD: KEY_LEFTSHIFT
 ```
 
-### Tap
+## Tap
 
 Press and release LS within `TAP_MILLIS` (default 200ms) for DE.
 
@@ -44,7 +78,7 @@ keyboard:       LS↓      LS↑                  LS↓                         
 computer sees:  LS↓      LS↑ DE↓ DE↑          LS↓                          LS↑
 ```
 
-### Double Tap
+## Double Tap
 
 Tap then press again with `DOUBLE_TAP_MILLIS` (default 150ms) to hold DE.
 
@@ -57,7 +91,7 @@ computer sees:  LS↓         LS↑ DE↓ DE↑     DE↓ ..(repeats).. DE↑
 
 You can continue double tapping so long as it is within the `DOUBLE_TAP_MILLIS` window.
 
-### Consumption
+## Consumption
 
 Press or release another key during the `TAP_MILLIS` window and the tap will not occur.
 
@@ -76,13 +110,13 @@ keyboard:       LS↓      a↓  a↑  LS↑             LS↓          LS↑   
 computer sees:  LS↓      a↓  a↑  LS↑             LS↓          LS↑ DE↓ DE↑   DE↓ ..(repeats)..
 ```
 
-## INSTALLATION
+# INSTALLATION
 
-### Package Manager
+## Package Manager
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/interception-dual-function-keys.svg)](https://repology.org/project/interception-dual-function-keys/versions)
 
-### From Source
+## From Source
 
 See [runtime dependencies](https://gitlab.com/interception/linux/tools#runtime-dependencies).
 
@@ -96,13 +130,13 @@ make && sudo make install
 
 Installation prefix defaults to `/usr/local`. This can be overridden in `config.mk`.
 
-## CONFIGURATION
+# CONFIGURATION
 
 There are two parts to be configured: dual-function-keys and udevmon, which launches dual-function-keys.
 
 See [examples](https://gitlab.com/interception/linux/plugins/dual-function-keys/-/tree/master/doc/examples.md) which contains dual-function-keys and udevmon.yaml configurations.
 
-### dual-function-keys
+## dual-function-keys
 
 This yaml file conventionally resides in `/etc/interception/dual-function-keys`.
 
@@ -138,7 +172,7 @@ MAPPINGS:
     HOLD: KEY_LEFTSHIFT
 ```
 
-### Combo Keys
+## Combo Keys
 
 You can configure the `TAP` as a “combo”, which will press then release multiple keys in order e.g. space cadet `(`:
 
@@ -165,15 +199,15 @@ TIMING:
     SYNTHETIC_KEYS_PAUSE_MILLISEC: 10
 ```
 
-### Changing the Behavior of `HOLD` Keys
+## Changing the Behavior of `HOLD` Keys
 
 You can optionally use `HOLD_START` to configure the behavior of `HOLD` keys.
 
-#### `HOLD_START: AFTER_PRESS`
+### `HOLD_START: AFTER_PRESS`
 
 If `HOLD_START` is unspecified, `AFTER_PRESS` or an unrecognized value, the default behaviour will apply.
 
-#### `HOLD_START: BEFORE_CONSUME`
+### `HOLD_START: BEFORE_CONSUME`
 
 `HOLD` keys are pressed before `KEY` is consumed, and released when `KEY` is released. Therefore no extra keys beside `TAP` keys are sent when `KEY` is tapped, while `HOLD` keys can still be used as modifiers.
 
@@ -200,7 +234,7 @@ keyboard:       LS↓      a↓  a↑   LS↑             LS↓          LS↑  
 computer sees:       LS↓ a↓  a↑   LS↑                          DE↓ DE↑       DE↓ ..(repeats)..
 ```
 
-#### `HOLD_START: BEFORE_CONSUME_OR_RELEASE`
+### `HOLD_START: BEFORE_CONSUME_OR_RELEASE`
 
 The behavior is like `BEFORE_CONSUME` except that when `KEY` is released and is neither tapped nor consumed before, `HOLD` keys are pressed in order and then released in order.
 
@@ -218,7 +252,7 @@ keyboard:       LS↓      LS↑                  LS↓                         
 computer sees:           DE↓ DE↑                                           LS↓ LS↑
 ```
 
-#### `HOLD_START: AFTER_RELEASE`
+### `HOLD_START: AFTER_RELEASE`
 
 Hold will only start after key release if the TAP_MILLISEC time has been exceded. This hold start is not affected by any kind of consumption
 
@@ -236,7 +270,7 @@ keyboard:       a↓       a↑                   a↓                          
 computer sees:           a↓  a↑                                            A↓ A↑
 ```
 
-### Warning
+## Warning
 
 Do not assign the same modifier to two keys that you intend to press at the same time, as they will interfere with each other. Use left and right versions of the modifiers e.g. alt-tab with space-caps:
 
@@ -266,7 +300,7 @@ MAPPINGS:
     HOLD_START: BEFORE_CONSUME_OR_RELEASE
 ```
 
-### udevmon
+## udevmon
 
 udevmon needs to be informed that we desire Dual Function Keys. See [How It Works](https://gitlab.com/interception/linux/tools#how-it-works) for the full story.
 
@@ -303,7 +337,7 @@ My `/etc/interception/udevmon.d/my-keyboards.yaml`:
       EV_KEY: [ KEY_LEFTSHIFT ]
 ```
 
-### Multiple Devices
+## Multiple Devices
 
 When using inputs from multiple devices e.g. ctrl-scroll it may be necessary to [mux](https://gitlab.com/interception/linux/tools#mux) those devices for dual-function-keys to work across these devices e.g. scroll consuming ctrl.
 
@@ -348,7 +382,7 @@ An alternative, if you want to [live dangerously](https://gitlab.com/interceptio
     LINK: /dev/input/by-id/usb-my-mouse-event-mouse
 ```
 
-## CAVEATS
+# CAVEATS
 
 As always, there is a caveat: dual-function-keys operates on raw *keycodes*, not *keysyms*, as seen by X11 or Wayland.
 
@@ -363,9 +397,9 @@ Some common XKB usages that might be found in your X11 configuration:
     Option "XkbOptions" "caps:escape"
 ```
 
-## FAQ
+# FAQ
 
-### I have a new use case. Can you support it?
+## I have a new use case. Can you support it?
 
 Please raise an issue.
 
@@ -373,7 +407,7 @@ dual-function-keys has been built for my needs. I will be intrigued to hear your
 
 As usual, PRs are very welcome.
 
-### I see you are using q.m.k HHKB mod Keyboard in your udevmon. It uses [QMK Firmware](https://qmk.fm/). Why not just use [Tap-Hold](https://docs.qmk.fm/#/tap_hold)?
+## I see you are using q.m.k HHKB mod Keyboard in your udevmon. It uses [QMK Firmware](https://qmk.fm/). Why not just use [Tap-Hold](https://docs.qmk.fm/#/tap_hold)?
 
 Good catch! That does indeed provide the same functionality as dual-function-keys. Unfortunately there are some drawbacks:
 
@@ -381,19 +415,19 @@ Good catch! That does indeed provide the same functionality as dual-function-key
 2.  There are some issues with that functionality, as noted in the documentation [Tap-Hold](https://docs.qmk.fm/).
 3.  It requires a fast processor in the keyboard. My unscientific testing with an Ergodox (~800 scans/sec) and HHKB (~140) revealed that the slower keyboard is mushy and unuseably inaccurate.
 
-### Why not use [xcape](https://github.com/alols/xcape)?
+## Why not use [xcape](https://github.com/alols/xcape)?
 
 Xcape only provides simple tap/hold functionality. It appears difficult (impossible?) to add the remaining functionality using its XTestFakeKeyEvent mechanisms.
 
-### My Key Combination Isn’t Working
+## My Key Combination Isn’t Working
 
 Ensure that your window manager is not intercepting that key combination.
 
-### I Don’t Want Double Tap Functionality
+## I Don’t Want Double Tap Functionality
 
 Set DOUBLE_TAP_MILLISEC to 0. See [Key Combinations, No Double Tap](https://gitlab.com/interception/linux/plugins/dual-function-keys/-/blob/master/doc/examples.md#key-combinations-no-double-tap).
 
-## CONTRIBUTORS
+# CONTRIBUTORS
 
 Please fork this repo and submit a PR.
 
@@ -405,7 +439,7 @@ You can test the generated man page with `man -l dual-function-keys.1`
 
 As usual, please obey `.editorconfig`.
 
-## LICENSE
+# LICENSE
 
 <a href="https://gitlab.com/interception/linux/plugins/caps2esc/blob/master/LICENSE.md"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/License_icon-mit-2.svg/120px-License_icon-mit-2.svg.png" alt="MIT"></a>
 

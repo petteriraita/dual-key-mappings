@@ -36,7 +36,8 @@ ctags:
 
 # dual-function-keys.md is pandoc flavoured markdown; please edit that and commit all 3 files
 doc: dual-function-keys.md
-	$(PANDOC) -s --wrap=none -f markdown -t man dual-function-keys.md -o dual-function-keys.1 --shift-heading-level-by=-1
+	$(PANDOC) -s --wrap=none -f markdown -t man dual-function-keys.md -o dual-function-keys.1
 	$(PANDOC) -s --wrap=none -f markdown -t commonmark dual-function-keys.md -o README.md
+	gh-md-toc --no-backup --hide-footer README.md
 
 .PHONY: all clean install uninstall ctags
