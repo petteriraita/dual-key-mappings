@@ -1,8 +1,8 @@
-## NAME
+# NAME
 
 interception - dual function keys
 
-## DESCRIPTION
+# DESCRIPTION
 
 Tap for one key, hold for another.
 
@@ -12,15 +12,61 @@ A hand-saver for those with restricted finger mobility.
 
 A plugin for [interception tools](https://gitlab.com/interception/linux).
 
-## QUICK START
+# QUICK START
 
-1.  Create some mappings `/etc/interception/dual-function-keys/my-mappings.yaml`. There are many [examples](https://gitlab.com/interception/linux/plugins/dual-function-keys/-/tree/master/doc/examples.md)
-2.  Create your [interception tools](https://gitlab.com/interception/linux) udevmon configuration: `/etc/interception/udevmon.d/my-keyboards.yaml`. You can use [my configuration](#udevmon) to get started.
+1.  Create some [dual-function-keys](#dual-function-keys) mappings e.g. `/etc/interception/dual-function-keys/my-mappings.yaml`
+
+``` yaml
+MAPPINGS:
+  - KEY: KEY_BACKSPACE
+    TAP: KEY_BACKSPACE
+    HOLD: KEY_LEFTSHIFT
+  - KEY: KEY_SPACE
+    TAP: KEY_SPACE
+    HOLD: KEY_RIGHTSHIFT
+```
+
+2.  Find your keyboard `libinput list-devices | grep "^Device"` and create a [udevmon](#udevmon) configuration e.g. `/etc/interception/udevmon.d/my-udevmon.yaml`
+
+``` yaml
+- JOB: "intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/my-mappings.yaml | uinput -d $DEVNODE"
+  DEVICE:
+    NAME: "tshort Dactyl-Manuform-6x6.*"
+```
+
 3.  Enable udevmon: `sudo systemctl enable udevmon`
+
 4.  (Re)start udevmon: `sudo systemctl restart udevmon`
+
 5.  Check for problems: `journalctl -u udevmon`. No news is good news. You can safely disregard any `ignoring /etc/interception/udevmon.yaml, reason: bad file: /etc/interception/udevmon.yaml` messages.
 
-## FUNCTIONALITY
+<!-- gh-md-toc --no-backup --hide-footer README.md -->
+<!--ts-->
+* [FUNCTIONALITY](#functionality)
+   * [Tap](#tap)
+   * [Double Tap](#double-tap)
+   * [Consumption](#consumption)
+* [INSTALLATION](#installation)
+   * [Package Manager](#package-manager)
+   * [From Source](#from-source)
+* [CONFIGURATION](#configuration)
+   * [udevmon](#udevmon)
+   * [dual-function-keys](#dual-function-keys)
+      * [Combo Keys](#combo-keys)
+      * [Changing the Behavior of HOLD Keys](#changing-the-behavior-of-hold-keys)
+         * [HOLD_START: AFTER_PRESS](#hold_start-after_press)
+         * [HOLD_START: BEFORE_CONSUME](#hold_start-before_consume)
+         * [HOLD_START: BEFORE_CONSUME_OR_RELEASE](#hold_start-before_consume_or_release)
+         * [HOLD_START: AFTER_RELEASE](#hold_start-after_release)
+      * [Warning](#warning)
+   * [Multiple Devices](#multiple-devices)
+* [CAVEATS](#caveats)
+* [FAQ](#faq)
+* [CONTRIBUTORS](#contributors)
+* [LICENSE](#license)
+<!--te-->
+
+# FUNCTIONALITY
 
 In these examples we will use the left shift key (LS).
 
@@ -32,7 +78,7 @@ It is configured to tap for delete (DE) and hold for LS.
   HOLD: KEY_LEFTSHIFT
 ```
 
-### Tap
+## Tap
 
 Press and release LS within `TAP_MILLIS` (default 200ms) for DE.
 
@@ -44,7 +90,7 @@ keyboard:       LS↓      LS↑                  LS↓                         
 computer sees:  LS↓      LS↑ DE↓ DE↑          LS↓                          LS↑
 ```
 
-### Double Tap
+## Double Tap
 
 Tap then press again with `DOUBLE_TAP_MILLIS` (default 150ms) to hold DE.
 
@@ -57,7 +103,7 @@ computer sees:  LS↓         LS↑ DE↓ DE↑     DE↓ ..(repeats).. DE↑
 
 You can continue double tapping so long as it is within the `DOUBLE_TAP_MILLIS` window.
 
-### Consumption
+## Consumption
 
 Press or release another key during the `TAP_MILLIS` window and the tap will not occur.
 
@@ -76,13 +122,13 @@ keyboard:       LS↓      a↓  a↑  LS↑             LS↓          LS↑   
 computer sees:  LS↓      a↓  a↑  LS↑             LS↓          LS↑ DE↓ DE↑   DE↓ ..(repeats)..
 ```
 
-## INSTALLATION
+# INSTALLATION
 
-### Package Manager
+## Package Manager
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/interception-dual-function-keys.svg)](https://repology.org/project/interception-dual-function-keys/versions)
 
-### From Source
+## From Source
 
 See [runtime dependencies](https://gitlab.com/interception/linux/tools#runtime-dependencies).
 
@@ -96,15 +142,42 @@ make && sudo make install
 
 Installation prefix defaults to `/usr/local`. This can be overridden in `config.mk`.
 
-## CONFIGURATION
+# CONFIGURATION
 
-There are two parts to be configured: dual-function-keys and udevmon, which launches dual-function-keys.
+## udevmon
 
-See [examples](https://gitlab.com/interception/linux/plugins/dual-function-keys/-/tree/master/doc/examples.md) which contains dual-function-keys and udevmon.yaml configurations.
+udevmon from [interception-tools](https://gitlab.com/interception/linux/tools) is used to launch Dual Function Keys. See [How It Works](https://gitlab.com/interception/linux/tools#how-it-works) for the full story.
 
-### dual-function-keys
+Determine your keyboard’s name:
 
-This yaml file conventionally resides in `/etc/interception/dual-function-keys`.
+``` sh
+libinput list-devices | grep "^Device"
+```
+
+Alternatively, you can use interception tools’ [uinput -p](https://gitlab.com/interception/linux/tools#how-it-works) for more direct device enumeration based on available events (keys) etc.
+
+Create a new configuration: `/etc/interception/udevmon.d/my-keyboard.yaml`. You can create one file per keyboard or one file containing all keyboards. You can use a regex for the keyboard name.
+
+``` yaml
+- JOB: "intercept -g $DEVNODE | dual-function-keys -c </path/to/dual-function-keys.yaml> | uinput -d $DEVNODE"
+  DEVICE:
+    NAME: <keyboard name>
+```
+
+Example: laptop and dactyl:
+
+``` yaml
+- JOB: "intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/home-row-modifiers.yaml | uinput -d $DEVNODE"
+  DEVICE:
+    NAME: "AT Translated Set 2 keyboard"
+- JOB: "intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/dfk.thumb-cluster.yaml | uinput -d $DEVNODE"
+  DEVICE:
+    NAME: "tshort Dactyl-Manuform-6x6.*"
+```
+
+## dual-function-keys
+
+This yaml file conventionally resides in `/etc/interception/dual-function-keys` and contains the configuration for Dual Function Keys itself.
 
 You can use raw (integer) keycodes, however it is easier to use the `#define`d strings from [input-event-codes.h](https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h).
 
@@ -266,44 +339,7 @@ MAPPINGS:
     HOLD_START: BEFORE_CONSUME_OR_RELEASE
 ```
 
-### udevmon
-
-udevmon needs to be informed that we desire Dual Function Keys. See [How It Works](https://gitlab.com/interception/linux/tools#how-it-works) for the full story.
-
-``` yaml
-- JOB: "intercept -g $DEVNODE | dual-function-keys -c </path/to/dual-function-keys.yaml> | uinput -d $DEVNODE"
-  DEVICE:
-    NAME: <keyboard name>
-```
-
-The name may be determined by executing:
-
-``` sh
-sudo uinput -p -d /dev/input/by-id/X
-```
-
-where X is the device with the name that looks like your keyboard. Ensure that all `EV_KEY`s are present under `EVENTS`. If you can’t find your keyboard under `/dev/input/by-id`, look at devices directly under `/dev/input`.
-
-See [Interception Tools: How It Works](https://gitlab.com/interception/linux/tools#how-it-works) for more information on `uinput -p`.
-
-Usually the name is sufficient to uniquely identify the keyboard, however some keyboards register many devices such as a virtal mouse. You can run dual-function-keys for all the devices, however I prefer to run it only for the actual keyboard.
-
-My `/etc/interception/udevmon.d/my-keyboards.yaml`:
-
-``` yaml
-- JOB: "intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/home-row-modifiers.yaml | uinput -d $DEVNODE"
-  DEVICE:
-    NAME: "Minimalist Keyboard ABC"
-    EVENTS:
-      EV_KEY: [ KEY_LEFTSHIFT ]
-- JOB: "intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/thumb-cluster.yaml | uinput -d $DEVNODE"
-  DEVICE:
-    NAME: "Split Keyboard XYZ"
-    EVENTS:
-      EV_KEY: [ KEY_LEFTSHIFT ]
-```
-
-### Multiple Devices
+## Multiple Devices
 
 When using inputs from multiple devices e.g. ctrl-scroll it may be necessary to [mux](https://gitlab.com/interception/linux/tools#mux) those devices for dual-function-keys to work across these devices e.g. scroll consuming ctrl.
 
@@ -348,7 +384,7 @@ An alternative, if you want to [live dangerously](https://gitlab.com/interceptio
     LINK: /dev/input/by-id/usb-my-mouse-event-mouse
 ```
 
-## CAVEATS
+# CAVEATS
 
 As always, there is a caveat: dual-function-keys operates on raw *keycodes*, not *keysyms*, as seen by X11 or Wayland.
 
@@ -363,9 +399,9 @@ Some common XKB usages that might be found in your X11 configuration:
     Option "XkbOptions" "caps:escape"
 ```
 
-## FAQ
+# FAQ
 
-### I have a new use case. Can you support it?
+## I have a new use case. Can you support it?
 
 Please raise an issue.
 
@@ -373,7 +409,7 @@ dual-function-keys has been built for my needs. I will be intrigued to hear your
 
 As usual, PRs are very welcome.
 
-### I see you are using q.m.k HHKB mod Keyboard in your udevmon. It uses [QMK Firmware](https://qmk.fm/). Why not just use [Tap-Hold](https://docs.qmk.fm/#/tap_hold)?
+## I see you are using q.m.k HHKB mod Keyboard in your udevmon. It uses [QMK Firmware](https://qmk.fm/). Why not just use [Tap-Hold](https://docs.qmk.fm/#/tap_hold)?
 
 Good catch! That does indeed provide the same functionality as dual-function-keys. Unfortunately there are some drawbacks:
 
@@ -381,19 +417,19 @@ Good catch! That does indeed provide the same functionality as dual-function-key
 2.  There are some issues with that functionality, as noted in the documentation [Tap-Hold](https://docs.qmk.fm/).
 3.  It requires a fast processor in the keyboard. My unscientific testing with an Ergodox (~800 scans/sec) and HHKB (~140) revealed that the slower keyboard is mushy and unuseably inaccurate.
 
-### Why not use [xcape](https://github.com/alols/xcape)?
+## Why not use [xcape](https://github.com/alols/xcape)?
 
 Xcape only provides simple tap/hold functionality. It appears difficult (impossible?) to add the remaining functionality using its XTestFakeKeyEvent mechanisms.
 
-### My Key Combination Isn’t Working
+## My Key Combination Isn’t Working
 
 Ensure that your window manager is not intercepting that key combination.
 
-### I Don’t Want Double Tap Functionality
+## I Don’t Want Double Tap Functionality
 
 Set DOUBLE_TAP_MILLISEC to 0. See [Key Combinations, No Double Tap](https://gitlab.com/interception/linux/plugins/dual-function-keys/-/blob/master/doc/examples.md#key-combinations-no-double-tap).
 
-## CONTRIBUTORS
+# CONTRIBUTORS
 
 Please fork this repo and submit a PR.
 
@@ -405,7 +441,7 @@ You can test the generated man page with `man -l dual-function-keys.1`
 
 As usual, please obey `.editorconfig`.
 
-## LICENSE
+# LICENSE
 
 <a href="https://gitlab.com/interception/linux/plugins/caps2esc/blob/master/LICENSE.md"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/License_icon-mit-2.svg/120px-License_icon-mit-2.svg.png" alt="MIT"></a>
 
