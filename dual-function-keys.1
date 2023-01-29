@@ -30,7 +30,7 @@ A hand-saver for those with restricted finger mobility.
 A plugin for interception tools (https://gitlab.com/interception/linux).
 .SH QUICK START
 .IP "1." 3
-Create some dual-function-key mappings \f[V]/etc/interception/dual-function-keys/my-mappings.yaml\f[R] e.g.
+dual-function-keys: Create some dual-function-key mappings \f[V]/etc/interception/dual-function-keys/my-mappings.yaml\f[R] e.g.
 .IP
 .nf
 \f[C]
@@ -43,10 +43,8 @@ MAPPINGS:
     HOLD: KEY_RIGHTSHIFT
 \f[R]
 .fi
-.PP
-See udevmon
 .IP "2." 3
-Find your keyboard \f[V]libinput list-devices | grep \[dq]\[ha]Device\[dq]\f[R] and create \f[V]/etc/interception/udevmon.d/my-udevmon.yaml\f[R] e.g.
+udevmon: Find your keyboard \f[V]libinput list-devices | grep \[dq]\[ha]Device\[dq]\f[R] and create \f[V]/etc/interception/udevmon.d/my-udevmon.yaml\f[R] e.g.
 .IP
 .nf
 \f[C]
@@ -55,8 +53,6 @@ Find your keyboard \f[V]libinput list-devices | grep \[dq]\[ha]Device\[dq]\f[R] 
     NAME: \[dq]tshort Dactyl-Manuform-6x6.*\[dq]
 \f[R]
 .fi
-.PP
-See dual-function-keys
 .IP "3." 3
 Enable udevmon: \f[V]sudo systemctl enable udevmon\f[R]
 .IP "4." 3
