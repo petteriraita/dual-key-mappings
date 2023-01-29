@@ -14,10 +14,34 @@ A plugin for [interception tools](https://gitlab.com/interception/linux).
 
 # QUICK START
 
-1.  Create some mappings `/etc/interception/dual-function-keys/my-mappings.yaml`. There are many [examples](https://gitlab.com/interception/linux/plugins/dual-function-keys/-/tree/master/doc/examples.md)
-2.  Create your [interception tools](https://gitlab.com/interception/linux) udevmon configuration: `/etc/interception/udevmon.d/my-keyboards.yaml`. You can use [my configuration](#udevmon) to get started.
+1.  Create some dual-function-key mappings `/etc/interception/dual-function-keys/my-mappings.yaml` e.g.
+
+``` yaml
+MAPPINGS:
+  - KEY: KEY_BACKSPACE
+    TAP: KEY_BACKSPACE
+    HOLD: KEY_LEFTSHIFT
+  - KEY: KEY_SPACE
+    TAP: KEY_SPACE
+    HOLD: KEY_RIGHTSHIFT
+```
+
+See [udevmon](#udevmon)
+
+2.  Find your keyboard `libinput list-devices | grep "^Device"` and create `/etc/interception/udevmon.d/my-udevmon.yaml` e.g.
+
+``` yaml
+- JOB: "intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/my-mappings.yaml | uinput -d $DEVNODE"
+  DEVICE:
+    NAME: "tshort Dactyl-Manuform-6x6.*"
+```
+
+See [dual-function-keys](#dual-function-keys)
+
 3.  Enable udevmon: `sudo systemctl enable udevmon`
+
 4.  (Re)start udevmon: `sudo systemctl restart udevmon`
+
 5.  Check for problems: `journalctl -u udevmon`. No news is good news. You can safely disregard any `ignoring /etc/interception/udevmon.yaml, reason: bad file: /etc/interception/udevmon.yaml` messages.
 
 <!-- gh-md-toc --no-backup --hide-footer README.md -->
