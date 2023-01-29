@@ -14,7 +14,7 @@ A plugin for [interception tools](https://gitlab.com/interception/linux).
 
 # QUICK START
 
-1.  [dual-function-keys](#dual-function-keys): Create some dual-function-key mappings `/etc/interception/dual-function-keys/my-mappings.yaml` e.g.
+1.  Create some [dual-function-keys](#dual-function-keys) mappings e.g. `/etc/interception/dual-function-keys/my-mappings.yaml`
 
 ``` yaml
 MAPPINGS:
@@ -26,7 +26,7 @@ MAPPINGS:
     HOLD: KEY_RIGHTSHIFT
 ```
 
-2.  [udevmon](#udevmon): Find your keyboard `libinput list-devices | grep "^Device"` and create `/etc/interception/udevmon.d/my-udevmon.yaml` e.g.
+2.  Find your keyboard `libinput list-devices | grep "^Device"` and create a [udevmon](#udevmon) configuration e.g. `/etc/interception/udevmon.d/my-udevmon.yaml`
 
 ``` yaml
 - JOB: "intercept -g $DEVNODE | dual-function-keys -c /etc/interception/dual-function-keys/my-mappings.yaml | uinput -d $DEVNODE"
