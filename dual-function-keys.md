@@ -42,9 +42,7 @@ MAPPINGS:
 
 5. Check for problems: `journalctl -u udevmon`. No news is good news. You can safely disregard any `ignoring /etc/interception/udevmon.yaml, reason: bad file: /etc/interception/udevmon.yaml` messages.
 
-<!-- gh-md-toc --no-backup --hide-footer README.md -->
-<!--ts-->
-<!--te-->
+<!-- toc -->
 
 # FUNCTIONALITY
 
@@ -404,6 +402,13 @@ Ensure that your window manager is not intercepting that key combination.
 ## I Don't Want Double Tap Functionality
 
 Set DOUBLE_TAP_MILLISEC to 0. See [Key Combinations, No Double Tap](https://gitlab.com/interception/linux/plugins/dual-function-keys/-/blob/master/doc/examples.md#key-combinations-no-double-tap).
+
+## I Just Need Simple Key To Key Mapping
+
+dual-function-keys does not provide this functionality, please use:
+
+* Interception tools plugin [interception-k2k](https://github.com/zsugabubus/interception-k2k)
+* Standalone [keyd](https://github.com/rvaiya/keyd)
 
 # CONTRIBUTORS
 

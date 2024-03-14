@@ -40,31 +40,32 @@ MAPPINGS:
 
 5.  Check for problems: `journalctl -u udevmon`. No news is good news. You can safely disregard any `ignoring /etc/interception/udevmon.yaml, reason: bad file: /etc/interception/udevmon.yaml` messages.
 
-<!-- gh-md-toc --no-backup --hide-footer README.md -->
-<!--ts-->
+<!-- toc -->
+
 * [FUNCTIONALITY](#functionality)
-   * [Tap](#tap)
-   * [Double Tap](#double-tap)
-   * [Consumption](#consumption)
+  * [Tap](#tap)
+  * [Double Tap](#double-tap)
+  * [Consumption](#consumption)
 * [INSTALLATION](#installation)
-   * [Package Manager](#package-manager)
-   * [From Source](#from-source)
+  * [Package Manager](#package-manager)
+  * [From Source](#from-source)
 * [CONFIGURATION](#configuration)
-   * [udevmon](#udevmon)
-   * [dual-function-keys](#dual-function-keys)
-      * [Combo Keys](#combo-keys)
-      * [Changing the Behavior of HOLD Keys](#changing-the-behavior-of-hold-keys)
-         * [HOLD_START: AFTER_PRESS](#hold_start-after_press)
-         * [HOLD_START: BEFORE_CONSUME](#hold_start-before_consume)
-         * [HOLD_START: BEFORE_CONSUME_OR_RELEASE](#hold_start-before_consume_or_release)
-         * [HOLD_START: AFTER_RELEASE](#hold_start-after_release)
-      * [Warning](#warning)
-   * [Multiple Devices](#multiple-devices)
+  * [udevmon](#udevmon)
+  * [dual-function-keys](#dual-function-keys)
+    * [Combo Keys](#combo-keys)
+    * [Changing the Behavior of `HOLD` Keys](#changing-the-behavior-of-hold-keys)
+      * [`HOLD_START: AFTER_PRESS`](#hold_start-after_press)
+      * [`HOLD_START: BEFORE_CONSUME`](#hold_start-before_consume)
+      * [`HOLD_START: BEFORE_CONSUME_OR_RELEASE`](#hold_start-before_consume_or_release)
+      * [`HOLD_START: AFTER_RELEASE`](#hold_start-after_release)
+    * [Warning](#warning)
+  * [Multiple Devices](#multiple-devices)
 * [CAVEATS](#caveats)
 * [FAQ](#faq)
 * [CONTRIBUTORS](#contributors)
 * [LICENSE](#license)
-<!--te-->
+
+<!-- tocstop -->
 
 # FUNCTIONALITY
 
@@ -428,6 +429,13 @@ Ensure that your window manager is not intercepting that key combination.
 ## I Don’t Want Double Tap Functionality
 
 Set DOUBLE_TAP_MILLISEC to 0. See [Key Combinations, No Double Tap](https://gitlab.com/interception/linux/plugins/dual-function-keys/-/blob/master/doc/examples.md#key-combinations-no-double-tap).
+
+## I Just Need Simple Key To Key Mapping
+
+dual-function-keys does not provide this functionality, please use:
+
+- Interception tools plugin [interception-k2k](https://github.com/zsugabubus/interception-k2k)
+- Standalone [keyd](https://github.com/rvaiya/keyd)
 
 # CONTRIBUTORS
 
