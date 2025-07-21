@@ -42,4 +42,7 @@ doc: dual-function-keys.md
 	@echo
 	@echo "TODO: remove FAQs from toc README.md"
 
+gdb: dual-function-keys
+	gdb --args ./dual-function-keys -c /etc/interception/my-mappings.yaml
+
 .PHONY: all clean install uninstall ctags
